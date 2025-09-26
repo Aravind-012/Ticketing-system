@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Ticket{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 600px;">
+  <h2 class="mb-4 d-flex align-items-center">
+    <span class="me-2" style="font-size: 2rem;">🎫</span>Create New Ticket
+  </h2>
+  <form method="POST" action="">
+    {% csrf_token %}
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label for="subject" class="form-label fw-bold">Subject</label>
+        <input type="text" class="form-control" id="subject" name="subject" placeholder="Enter ticket subject" required />
+      </div>
+  
+      <div class="col-md-6">
+        <label for="priority" class="form-label fw-bold">Priority</label>
+        <select class="form-select" id="priority" name="priority" required>
+          <option>High</option>
+          <option>Medium</option>
+          <option>Low</option>
+        </select>
+      </div>
+  
+      <div class="col-md-6">
+        <label for="requester_name" class="form-label fw-bold">Requester Name</label>
+        <input type="text" class="form-control" id="requester_name" name="requester_name" placeholder="Enter your name" required />
+      </div>
+  
+      <div class="col-md-6">
+        <label for="requester_email" class="form-label fw-bold">Requester Email</label>
+        <input type="email" class="form-control" id="requester_email" name="requester_email" placeholder="Enter your email" required />
+      </div>
+  
+      <div class="col-md-6">
+        <label for="assigned_to" class="form-label fw-bold">Assign To</label>
+        <select class="form-select" id="assigned_to" name="assigned_to">
+          <option value="" selected>Unassigned</option>
+          <option value="suva">Suva</option>
+          <option value="nithi">Nithi</option>
+          <option value="hari">Hari</option>
+          <option value="abinav">Abinav</option>
+          <option value="aravind">Aravind</option>
+          <option value="tawheed">Tawheed</option>
+        </select>
+      </div>
+  
+      <div class="col-md-6">
+        <label for="assigned_phone" class="form-label fw-bold">Assigned User Phone</label>
+        <input type="text" class="form-control" id="assigned_phone" name="assigned_phone"
+          placeholder="Enter assigned user's phone number" />
+      </div>
+  
+      <div class="col-md-6">
+        <label for="requester_phone" class="form-label fw-bold">Requester Phone</label>
+        <input type="text" class="form-control" id="requester_phone" name="requester_phone" placeholder="Enter your phone number" required />
+      </div>
+    </div>
+  
+    <button type="submit" class="w-100 mt-4" style="background-color:  #142f44; color: white; border: none; font-weight: 600; padding: 10px 0; border-radius: 6px;">
+      Create Ticket
+    </button>
+  </form>
+  
+</div>
+{% endblock %}

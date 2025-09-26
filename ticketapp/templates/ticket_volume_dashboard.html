@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Ticket Volume Dashboard{% endblock %}
+
+{% block content %}
+<h2>Ticket Volume (Last 30 days)</h2>
+<canvas id="ticketChart" width="800" height="400"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ticketCtx = document.getElementById('ticketChart').getContext('2d');
+const ticketChart = new Chart(ticketCtx, {
+    type: 'line',
+    data: {
+        labels: {{ dates|safe }},
+        datasets: [
+            {
+                label: 'Tickets Created',
+                data: {{ created_counts|safe }},
+                borderColor: 'blue',
+                fill: false,
+            },
+            {
+                label: 'Tickets Resolved',
+                data: {{ resolved_counts|safe }},
+                borderColor: 'green',
+                fill: false,
+            },
+            {
+                label: 'Tickets Pending',
+                data: {{ pending_counts|safe }},
+                borderColor: 'orange',
+                fill: false,
+            },
+        ],
+    },
+    options: {
+        responsive: true,
+        scales: {
+            x: { title: { display: true, text: 'Date' } },
+            y: { beginAtZero: true, title: { display: true, text: 'Number of Tickets' } },
+        },
+    }
+});
+</script>
+
+<hr/>
+
+<h2>Client Onboarding Summary</h2>
+<div class="row mb-4">
+  <div class="col">
+    <div class="card p-3 text-white bg-primary" style="border-radius: 15px;">
+      <h5>Total Clients</h5>
+      <p class="display-4">{{ total_clients }}</p>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card p-3 bg-warning" style="border-radius: 15px;">
+      <h5>Pending Clients</h5>
+      <p class="display-4">{{ pending_clients }}</p>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card p-3 bg-success" style="border-radius: 15px;">
+      <h5>Completed Clients</h5>
+      <p class="display-4">{{ completed_clients }}</p>
+    </div>
+  </div>
+</div>
+
+<h3>Onboarding Over Last 30 Days</h3>
+<canvas id="onboardingChart" width="800" height="400"></canvas>
+
+<script>
+const onboardingCtx = document.getElementById('onboardingChart').getContext('2d');
+const onboardingChart = new Chart(onboardingCtx, {
+    type: 'line',
+    data: {
+        labels: {{ onboarding_dates|safe }},
+        datasets: [
+            {
+                label: 'Completed',
+                data: {{ onboarded_counts|safe }},
+                borderColor: 'green',
+                fill: false,
+            },
+            {
+                label: 'Pending',
+                data: {{ pending_counts_onboarded|safe }},
+                borderColor: 'orange',
+                fill: false,
+            },
+        ],
+    },
+    options: {
+        responsive: true,
+        scales: {
+            x: { title: { display: true, text: 'Date' } },
+            y: { title: { display: true, text: 'Number of Clients' }, beginAtZero: true },
+        },
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Filter Tickets{% endblock %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2 class="mb-4">
+        &#128269; <!-- unicode magnifying glass or use a filter emoji -->
+        Filter Tickets by Status
+    </h2>      
+    <form method="GET" action="{% url 'ticket_filter' %}" class="mb-3">
+      <label for="status" class="form-label"><b>Select Status:</b></label>
+      <select name="status" id="status" class="form-select" style="max-width: 250px; display: inline-block;" onchange="this.form.submit()">
+        <option value="" {% if not selected_status %}selected{% endif %}>All</option>
+        <option value="Pending" {% if selected_status == "Pending" %}selected{% endif %}>Pending</option>
+        <option value="Work in Process" {% if selected_status == "Work in Process" %}selected{% endif %}>Work in Process</option>
+        <option value="Completed" {% if selected_status == "Completed" %}selected{% endif %}>Completed</option>
+      </select>
+    </form>
+
+    <style>
+        .table thead tr th {
+            background-color:  #142f44;
+            color: white !important;
+            border-color:  white !important;
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        .table thead tr {
+            background-color: lightgreen !important;
+        }
+        </style>
+        
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Ticket ID</th>
+              <th>Subject</th>
+              <th>Requester</th>
+              <th>Phone</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Created At</th>
+            </tr>
+          </thead>
+        
+      <tbody>
+        {% for ticket in tickets %}
+        <tr>
+          <td>{{ ticket.id }}</td>
+          <td>{{ ticket.subject }}</td>
+          <td>{{ ticket.requester_name }}</td>
+          <td>{{ ticket.requester_phone }}</td>
+          <td>
+            {% if ticket.priority == "High" %}
+              <span class="badge bg-danger">High</span>
+            {% elif ticket.priority == "Medium" %}
+              <span class="badge bg-warning text-dark">Medium</span>
+            {% else %}
+              <span class="badge bg-success">Low</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if ticket.status == "Pending" %}
+              <span class="badge bg-warning text-dark">Pending</span>
+            {% elif ticket.status == "Work in Process" %}
+              <span class="badge bg-primary">Work in Process</span>
+            {% elif ticket.status == "Completed" %}
+              <span class="badge bg-success">Completed</span>
+            {% endif %}
+          </td>
+          <td>{{ ticket.created_at|date:"M d, Y, h:i a" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-danger">No tickets found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

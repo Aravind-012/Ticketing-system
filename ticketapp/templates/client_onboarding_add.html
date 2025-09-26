@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Client Onboarding{% endblock %}
+{% block content %}
+<div class="container mt-5" style="max-width: 700px;">
+  <h2 class="mb-4">New Client Onboarding</h2>
+  <form method="POST" action="">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label for="client_name" class="form-label fw-bold">Client Name</label>
+      <input type="text" class="form-control" id="client_name" name="client_name" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label fw-bold">Description</label>
+      <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter description here"></textarea>
+    </div>
+    
+
+    <div class="mb-3">
+      <label for="plans" class="form-label fw-bold">Plan</label>
+      <select class="form-select" id="plans" name="plans" required>
+        <option value="pro">Pro Plan</option>
+        <option value="business">Business Plan</option>
+        <option value="basic">Basic Plan</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="assigned_to" class="form-label fw-bold">Assign Onboarding To</label>
+      <select class="form-select" id="assigned_to" name="assigned_to" required>
+        <option value="" selected>Select user</option>
+        <option value="suva">Suva</option>
+        <option value="nithi">Nithi</option>
+        <option value="hari">Hari</option>
+        <option value="abinav">Abinav</option>
+        <option value="aravind">Aravind</option>
+        <option value="tawheed">Tawheed</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="assigned_phone" class="form-label fw-bold">Assigned User Phone</label>
+      <input type="text" class="form-control" id="assigned_phone" name="assigned_phone" placeholder="Enter assigned user's phone number" />
+    </div> 
+    
+    <div class="mb-3">
+      <label for="onboarding_deadline_days" class="form-label fw-bold">Onboarding Deadline (Days)</label>
+      <input type="number" class="form-control" id="onboarding_deadline_days" name="onboarding_deadline_days" value="7" min="1" />
+    </div>
+    
+
+    <button type="submit" class="w-100" style="background-color: #142f44; color: #fff; border: none; font-weight: 600; padding: 10px 0; border-radius: 6px;">
+        Add Client
+      </button>
+      
+  </form>
+</div>
+{% endblock %}

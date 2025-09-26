@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Client Status{% endblock %}
+
+{% block content %}
+<style>
+    .card-row {
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      gap: 30px; /* space between cards */
+      margin-top: 48px;
+    }
+    .card-button {
+      width: 320px;
+      background-color: white;
+      border: 2px solid #142f44 ;
+      border-radius: 18px;
+      padding: 32px 12px;
+      cursor: pointer;
+      font-size: 26px;
+      font-weight: 600;
+      color: #212529;
+      box-shadow: 0 0 0 rgba(144,238,144,0); /* no shadow by default */
+      transition: background-color 0.2s, box-shadow 0.2s;
+      text-align: center;
+      display: block;
+    }
+    .card-button:hover {
+      background-color: #1d3648;
+      box-shadow: 0 6px 28px rgba(144,238,144,0.14);
+      color: #fff;
+    }
+    .card-subtext {
+      display: block;
+      font-size: 14px;
+      font-weight: normal;
+      margin-top: 12px;
+      color: #212529;
+    }
+  </style>
+  
+  <div class="card-row">
+    <a href="{% url 'client_onboarding_list' %}" class="card-button" style="text-decoration:none;">
+      Onboarding
+      <span class="card-subtext">New client setup and orientation</span>
+    </a>
+    <button class="card-button">
+      Payment Pending
+      <span class="card-subtext">Clients with dues to be cleared</span>
+    </button>
+    <button class="card-button">
+      Existing Client Payment Followup
+      <span class="card-subtext">Reminder for ongoing clients</span>
+    </button>
+  </div>
+  
+{% endblock %}

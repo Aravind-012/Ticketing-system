@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>All Tickets</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      margin: 40px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: #ffffff;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 15px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color:  #142f44;
+      color: white;
+      text-transform: uppercase;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    tr:nth-child(even) {
+      background-color: ;
+    }
+
+    tr:hover {
+      background-color: lightcyan;
+    }
+
+    td {
+      font-size: 14px;
+      color: #333;
+    }
+
+    /* Priority badges */
+    .priority {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;  /* Oval shape */
+      font-size: 13px;
+      font-weight: bold;
+      color: white;
+      text-align: center;
+    }
+    .high {
+      background-color: rgb(245, 121, 121); /* Red */
+    }
+    .medium {
+      background-color: #f5d164; /* Yellow/Orange */
+      color: #000;
+    }
+    .low {
+      background-color: #4cfc75; /* Green */
+    }
+  </style>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block title %}All Tickets{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <h2 style="margin: 0;">🎫 Ticket List</h2>
+  <a href="{% url 'ticket_create' %}" 
+     style="background-color:  #142f44; color: white; padding: 10px 18px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+    ➕ Add Ticket
+  </a>
+</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Ticket ID</th>
+          <th>Subject</th>
+          <th>Requester</th>
+          <th>Phone</th>
+          <th>Assigned To</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th>ESCALATION</th>
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ticket in tickets %}
+        <tr>
+          <td>{{ ticket.id }}</td>
+          <td>{{ ticket.subject }}</td>
+          <td>{{ ticket.requester_name }}</td>
+          <td>{{ ticket.requester_phone }}</td>
+          <td>{{ ticket.assigned_to|default:"Unassigned" }}</td>
+
+          
+          <td>
+            {% if ticket.priority == "High" %}
+              <span class="priority high">High</span>
+            {% elif ticket.priority == "Medium" %}
+              <span class="priority medium">Medium</span>
+            {% else %}
+              <span class="priority low">Low</span>
+            {% endif %}
+          </td>
+          <td>
+            <form method="POST" action="{% url 'update_ticket_status' ticket.id %}">
+              {% csrf_token %}
+              <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="Pending" {% if ticket.status == "Pending" %}selected{% endif %}>Pending</option>
+                <option value="Work in Process" {% if ticket.status == "Work in Process" %}selected{% endif %}>Work in Process</option>
+                <option value="Completed" {% if ticket.status == "Completed" %}selected{% endif %}>Completed</option>
+              </select>
+            </form>
+            
+          </td>
+          <td>
+            {% if ticket.is_escalated %}
+              <span style="color: red; font-weight: bold;" title="Escalated Ticket">&#9888; Escalated</span>
+            {% else %}
+              <span>—</span>
+            {% endif %}
+          </td>
+                    
+          <td>{{ ticket.created_at }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" style="text-align:center; color:red;">No tickets found</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endblock %}
+</body>
+</html>

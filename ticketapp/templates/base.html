@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{% block title %}Ticket System{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="{% static 'ticketapp/styles.css' %}">
+    <style>
+        body {
+            overflow-x: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        #sidebar {
+        width: 250px;
+        position: fixed;
+        top: 0;
+        left: 0;              /* ✅ always visible */
+        height: 100%;
+        background: #abf5ab;
+        color: white;
+        padding-top: 60px;
+        transition: none;     /* no slide animation */
+        }
+        #sidebar.active {
+            left: 0;
+        }
+        #sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        #sidebar ul li {
+            padding: 15px;
+        }
+        #sidebar ul li a {
+            color: #e2ffe2;
+            text-decoration: none;
+        }
+        #sidebar ul li a:hover {
+            text-decoration: underline;
+        }
+        #content {
+        margin-left: 250px;   /* ✅ pushes content aside */
+        padding: 20px;
+        transition: none;
+        }
+        #content.active {
+            margin-left: 250px;
+        }
+
+        /* Status dropdown background colors */
+        select[name="status"].pending {
+            background-color: rgb(246, 246, 111); /* yellow */
+            color: #212529;
+        }
+        select[name="status"].work-in-process {
+            background-color: #45daf8; /* blue */
+            color: #212529;
+        }
+        select[name="status"].completed {
+            background-color: #24bc75; /* green */
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div id="sidebar" style="
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;   /* full viewport height */
+    background-color: #142f44;
+    color: #222;
+    padding-top: 60px;
+    overflow-y: auto;   /* scroll if content overflows */
+    border-radius: 0;
+    box-shadow: none;
+    transition: none;
+    z-index: 1000; 
+    ">
+    <ul style="list-style:none; padding:0; margin:0;">
+        <li><a href="{% url 'ticket_volume_dashboard' %}">Dashboard</a></li>
+        <li><a href="{% url 'ticket_list' %}">Ticket List</a></li>
+        <li><a href="{% url 'ticket_create' %}">Create Ticket</a></li>
+        <li><a href="{% url 'ticket_filter' %}">Filter Tickets</a></li>
+        <li><a href="{% url 'client_status' %}">Client Status</a></li>
+    </ul>
+    </div>
+
+
+    <!-- Page Content -->
+    <div id="content">
+        <nav class="navbar navbar-light bg-light mb-3">
+            <button type="button" id="sidebarCollapse" class="btn" style="background-color: #142f44; color: white; border: none;">
+                ☰
+              </button>
+            <span class="navbar-brand mb-0 h1">Ticket System</span>
+        </nav>
+
+        <div class="container-fluid">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Sidebar toggle
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            const btn = document.getElementById('sidebarCollapse');
+            btn.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                content.classList.toggle('active');
+            });
+
+            // Status dropdown color update
+            document.querySelectorAll('select[name="status"]').forEach((select) => {
+                function updateClass() {
+                    select.classList.remove("pending", "work-in-process", "completed");
+                    const val = select.value.toLowerCase().replace(/\s/g, "-");
+                    select.classList.add(val);
+                }
+                select.addEventListener("change", updateClass);
+                updateClass();
+            });
+        });
+    </script>
+
+</body>
+</html>
