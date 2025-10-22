@@ -152,3 +152,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 # Make Django respect HTTPS when proxied through ngrok
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
+STRIPE_SECRET_KEY = "***REMOVED***"
+STRIPE_PUBLISHABLE_KEY = "***REMOVED***"

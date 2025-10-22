@@ -13,9 +13,17 @@ from .models import Ticket  # adjust import if needed
 # newclient
 from .models import ClientOnboarding
 
-def ticket_list(request):
-    tickets = Ticket.objects.all().order_by("-created_at")
-    return render(request, "ticket_details.html", {"tickets": tickets})
+# payment pending   
+from datetime import datetime
+
+def parse_ym_to_date(ym_str):
+    if ym_str:
+        return datetime.strptime(ym_str + "-01", "%Y-%m-%d").date()
+    return None
+
+# def ticket_list(request):
+#     tickets = Ticket.objects.all().order_by("-created_at")
+#     return render(request, "ticket_details.html", {"tickets": tickets})
 # def ticket_list(request):
 #     tickets = Ticket.objects.select_related('assigned_to').all().order_by("-created_at")
 #     return render(request, "ticket_list.html", {"tickets": tickets})
@@ -111,6 +119,7 @@ def client_status(request):
 def client_onboarding_add(request):
     if request.method == "POST":
         client_name = request.POST.get("client_name")
+        client_phone = request.POST.get("client_phone")
         description = request.POST.get("description", "")
         plan = request.POST.get("plans")
         assigned_to = request.POST.get("assigned_to")
@@ -119,6 +128,7 @@ def client_onboarding_add(request):
 
         ClientOnboarding.objects.create(
             client_name=client_name,
+            client_phone=client_phone,
             description=description,
             plan=plan,
             assigned_to=assigned_to,
@@ -282,4 +292,116 @@ def ticket_volume_dashboard(request):
     }
 
     return render(request, 'ticket_volume_dashboard.html', context)
+
+from django.shortcuts import render, redirect
+from .models import PaymentPendingClient
+from django.contrib.auth.models import User
+
+
+def add_payment_pending_client(request):
+    users = User.objects.all()  # to populate dropdown
+
+    if request.method == 'POST':
+        client_name = request.POST.get('client_name')
+        client_phone = request.POST.get('client_phone')
+        assigned_to = request.POST.get('assigned_to')  # This is username string
+        assigned_phone = request.POST.get('assigned_phone')
+        payment_amount = request.POST.get('payment_amount')
+        due_date = request.POST.get('due_date')
+        
+        # New fields related to subscription duration
+        duration = request.POST.get('duration')
+        months = request.POST.get('months') or None
+        # start_month = request.POST.get('start_month') or None
+        # end_month = request.POST.get('end_month') or None
+        years = request.POST.get('years') or None
+        start_year = request.POST.get('start_year') or None
+        end_year = request.POST.get('end_year') or None
+        # Convert year-month strings to full dates for DateFields
+        start_month_str = request.POST.get('start_month')
+        end_month_str = request.POST.get('end_month')
+        start_month = parse_ym_to_date(start_month_str)
+        end_month = parse_ym_to_date(end_month_str)
+
+        # Create and save new PaymentPendingClient using username string
+        PaymentPendingClient.objects.create(
+            client_name=client_name,
+            client_phone=client_phone,
+            assigned_to=assigned_to,
+            assigned_phone=assigned_phone,
+            payment_amount=payment_amount,
+            due_date=due_date,
+            duration=duration,
+            months=months,
+            start_month=start_month,
+            end_month=end_month,
+            years=years,
+            start_year=start_year,
+            end_year=end_year,
+        )
+        return redirect('payment_pending_list')  # Redirect after creating
+
+    return render(request, 'add_payment_pending_client.html', {'users': users})
+
+
+# from .models import PaymentPendingClient
+
+# def payment_pending_list(request):
+#     clients = PaymentPendingClient.objects.all()
+#     return render(request, 'payment_pending_list.html', {'clients': clients})
+from datetime import date
+from .models import PaymentPendingClient
+
+def payment_pending_list(request):
+    clients = PaymentPendingClient.objects.all()
+    today = date.today()
+    for client in clients:
+        client.is_overdue = client.due_date and today > client.due_date
+    return render(request, 'payment_pending_list.html', {'clients': clients})
+
+from django.views.decorators.http import require_POST
+
+@require_POST
+def update_payment_status(request, client_id):
+    status = request.POST.get('status')
+    client = PaymentPendingClient.objects.get(pk=client_id)
+    if status in ['pending', 'completed']:
+        client.status = status
+        client.save()
+    return redirect('payment_pending_list')
+
+from django.shortcuts import get_object_or_404
+
+def delete_payment_pending_client(request, client_id):
+    if request.method == 'POST':
+        client = get_object_or_404(PaymentPendingClient, id=client_id)
+        client.delete()
+    return redirect('payment_pending_list')
+
+from django.shortcuts import get_object_or_404, redirect
+
+def client_onboarding_delete(request, client_id):
+    if request.method == 'POST':
+        client = get_object_or_404(ClientOnboarding, id=client_id)
+        client.delete()
+    return redirect('client_onboarding_list')
+
+from django.shortcuts import get_object_or_404, redirect
+from .models import Ticket
+
+def ticket_delete(request, ticket_id):
+    if request.method == 'POST':
+        ticket = get_object_or_404(Ticket, id=ticket_id)
+        ticket.delete()
+    return redirect('ticket_list')
+
+from django.core.paginator import Paginator
+
+def ticket_list(request):
+    tickets = Ticket.objects.all().order_by("-created_at")
+    paginator = Paginator(tickets, 10)  # 10 tickets per page
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(request, "ticket_details.html", {"page_obj": page_obj})
+
 

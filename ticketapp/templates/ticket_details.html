@@ -9,14 +9,14 @@
       margin: 40px;
     }
 
-    .container {
-      max-width: 1000px;
+    /* .container {
+      max-width: 1200px;
       margin: auto;
       background: #ffffff;
       padding: 20px 30px;
       border-radius: 10px;
       box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-    }
+    } */
 
     h2 {
       text-align: center;
@@ -102,12 +102,15 @@
           <th>Assigned To</th>
           <th>Priority</th>
           <th>Status</th>
-          <th>ESCALATION</th>
+          <th style="width:70px;">Escalation</th>
           <th>Created At</th>
+          <th style="width: 90px;">Delete</th>
+
         </tr>
       </thead>
       <tbody>
-        {% for ticket in tickets %}
+        {% for ticket in page_obj %}
+
         <tr>
           <td>{{ ticket.id }}</td>
           <td>{{ ticket.subject }}</td>
@@ -136,23 +139,43 @@
             </form>
             
           </td>
-          <td>
+          <td style="width:70px;">
             {% if ticket.is_escalated %}
               <span style="color: red; font-weight: bold;" title="Escalated Ticket">&#9888; Escalated</span>
             {% else %}
               <span>—</span>
             {% endif %}
           </td>
+          
                     
           <td>{{ ticket.created_at }}</td>
+          <td style="width: 90px;">
+            <form method="post" action="{% url 'ticket_delete' ticket.id %}" onsubmit="return confirm('Are you sure?');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm" style="padding: 4px 10px; font-size: 13px;">Delete</button>
+            </form>
+          </td>
+          
         </tr>
         {% empty %}
         <tr>
-          <td colspan="6" style="text-align:center; color:red;">No tickets found</td>
+          <td colspan="10" style="text-align:center; color:red;">No tickets found</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+    <div style="text-align:center; margin-top: 20px;">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+      {% endif %}
+    
+      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+      {% endif %}
+    </div>
+    
   </div>
   {% endblock %}
 </body>

@@ -11,6 +11,7 @@
     <thead>
       <tr>
         <th>Client Name</th>
+        <th>Client Phone Number</th>
         <th>Description</th>
         <th>Plan</th>
         <th>Assigned To</th>
@@ -18,14 +19,16 @@
         <th>Deadline (Days)</th> 
         <th>Added</th>
         <th>status</th>
+        <th>Delete</th>
       </tr>
     </thead>
     <tbody>
         {% for client in clients %}
-        <form method="post" action="{% url 'update_client_status' client.id %}">
+        
           {% csrf_token %}
           <tr>
             <td>{{ client.client_name }}</td>
+            <td>{{ client.client_phone }}</td>
             <td>{{ client.description }}</td>
             <td>{{ client.plan }}</td>
             <td>{{ client.assigned_to }}</td>
@@ -33,14 +36,23 @@
             <td>{{ client.onboarding_deadline_days }}</td>
             <td>{{ client.created_at|date:"Y-m-d H:i" }}</td>
             <td>
-              <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
-                {% for key, label in client.STATUS_CHOICES %}
-                  <option value="{{ key }}" {% if client.status == key %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-              </select>
+              <form method="post" action="{% url 'update_client_status' client.id %}">
+                {% csrf_token %}
+                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                  {% for key, label in client.STATUS_CHOICES %}
+                    <option value="{{ key }}" {% if client.status == key %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </form>
+            </td>
+            <td>
+              <form method="post" action="{% url 'client_onboarding_delete' client.id %}" onsubmit="return confirm('Are you sure you want to delete this client?');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
             </td>
           </tr>
-        </form>
+        
         {% endfor %}
       </tbody>
       

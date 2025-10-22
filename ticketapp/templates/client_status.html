@@ -45,10 +45,11 @@
       Onboarding
       <span class="card-subtext">New client setup and orientation</span>
     </a>
-    <button class="card-button">
+    <a href="{% url 'payment_pending_list' %}" class="card-button" style="text-decoration:none; display:block;">
       Payment Pending
       <span class="card-subtext">Clients with dues to be cleared</span>
-    </button>
+    </a>
+    
     <button class="card-button">
       Existing Client Payment Followup
       <span class="card-subtext">Reminder for ongoing clients</span>

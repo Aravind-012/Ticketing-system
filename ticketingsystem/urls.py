@@ -22,7 +22,8 @@ from ticketapp.views import ticket_volume_dashboard
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('ticket_list/',views.ticket_list,name='ticket_list'),
+    path('ticket_list/', views.ticket_list, name='ticket_list'),
+    path('ticket/delete/<int:ticket_id>/', views.ticket_delete, name='ticket_delete'),
     path('ticket_create/',views.ticket_create,name='ticket_create'),
     path('ticket/<int:ticket_id>/update_status/', views.update_ticket_status, name='update_ticket_status'),
     path('ticket_filter/', views.ticket_filter, name='ticket_filter'),
@@ -31,6 +32,13 @@ urlpatterns = [
     path('client_onboarding/', views.client_onboarding_list, name='client_onboarding_list'),
     path('client_onboarding/add/', views.client_onboarding_add, name='client_onboarding_add'),
     path('client-onboarding/<int:pk>/update-status/', views.update_client_status, name='update_client_status'),
+    path('client_onboarding/delete/<int:client_id>/', views.client_onboarding_delete, name='client_onboarding_delete'),
     path('dashboard/', views.onboarding_dashboard, name='onboarding_dashboard'),
+    path('payment_pending/', views.payment_pending_list, name='payment_pending_list'),
+    path('payment_pending/add/', views.add_payment_pending_client, name='payment_pending_add'),
+    path('payment-status-update/<int:client_id>/', views.update_payment_status, name='update_payment_status'),
+    path('payment_pending/delete/<int:client_id>/', views.delete_payment_pending_client, name='payment_pending_delete')
+
+
 
 ]

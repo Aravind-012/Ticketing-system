@@ -105,6 +105,7 @@ class Ticket(models.Model):
     
 class ClientOnboarding(models.Model):
     client_name = models.CharField(max_length=100)
+    client_phone = models.CharField(max_length=20, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     plan = models.CharField(max_length=50)
     assigned_to = models.CharField(max_length=50)
@@ -120,3 +121,43 @@ class ClientOnboarding(models.Model):
 
     def __str__(self):
         return self.client_name
+    
+class PaymentPendingClient(models.Model):
+    client_name = models.CharField(max_length=255)
+    client_phone = models.CharField(max_length=20, null=True, blank=True)
+    duration = models.CharField(max_length=20, null=True, blank=True)
+    months = models.IntegerField(null=True, blank=True)
+    start_month = models.DateField(null=True, blank=True)
+    end_month = models.DateField(null=True, blank=True)
+    years = models.IntegerField(null=True, blank=True)
+    start_year = models.IntegerField(null=True, blank=True)
+    end_year = models.IntegerField(null=True, blank=True)
+    assigned_to = models.CharField(max_length=150, default='unassigned')  # Store username as string now
+    assigned_phone = models.CharField(max_length=20)
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    due_date = models.DateField()
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    alert_sent = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.client_name
+    # def save(self, *args, **kwargs):
+    #     is_new = self.pk is None
+    #     was_overdue_before = False
+    #     if not is_new:
+    #         old = PaymentPendingClient.objects.get(pk=self.pk)
+    #         was_overdue_before = old.due_date and date.today() > old.due_date and not old.alert_sent
+
+    #     super().save(*args, **kwargs)
+
+    #     is_now_overdue = self.due_date and date.today() > self.due_date and not self.alert_sent
+    #     if is_now_overdue and not was_overdue_before:
+    #         from ticketapp.whatsapp import send_whatsapp_alert
+    #         success = send_whatsapp_alert(self.assigned_phone, self.id, "YOUR_ACCESS_TOKEN", "YOUR_TEMPLATE_ID", "YOUR_CUSTOM_FIELD_ID")
+    #         if success:
+    #             self.alert_sent = True
+    #             super().save(update_fields=['alert_sent'])
